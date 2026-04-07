@@ -1,6 +1,5 @@
 import "server-only";
 
-import type { User } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -15,7 +14,12 @@ export type AuthPayload = {
   username: string;
 };
 
-export function signAuthToken(user: Pick<User, "id" | "username">): string {
+type AuthUser = {
+  id: string;
+  username: string;
+};
+
+export function signAuthToken(user: AuthUser): string {
   return jwt.sign(
     {
       sub: user.id,

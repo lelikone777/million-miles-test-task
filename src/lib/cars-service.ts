@@ -1,23 +1,44 @@
-import type { Car, CarPhoto } from "@prisma/client";
 import { buildCarsOrderBy, buildCarsWhere, type CarsQuery } from "@/lib/cars-query";
 import { prisma } from "@/lib/prisma";
 
+type CarPhotoLite = {
+  url: string;
+};
+
+type CarRecord = {
+  id: string;
+  sourceUrl: string;
+  title: string;
+  brand: string;
+  model: string;
+  year: number | null;
+  mileageKm: number | null;
+  totalPriceYen: number | null;
+  vehiclePriceYen: number | null;
+  color: string | null;
+  fuelType: string | null;
+  transmission: string | null;
+  location: string | null;
+  scrapedAt: Date;
+  photos: CarPhotoLite[];
+};
+
 export type CarListItem = Pick<
-  Car,
-  | "id"
-  | "sourceUrl"
-  | "title"
-  | "brand"
-  | "model"
-  | "year"
-  | "mileageKm"
-  | "totalPriceYen"
-  | "vehiclePriceYen"
-  | "color"
-  | "fuelType"
-  | "transmission"
-  | "location"
-  | "scrapedAt"
+  CarRecord,
+  "id" |
+  "sourceUrl" |
+  "title" |
+  "brand" |
+  "model" |
+  "year" |
+  "mileageKm" |
+  "totalPriceYen" |
+  "vehiclePriceYen" |
+  "color" |
+  "fuelType" |
+  "transmission" |
+  "location" |
+  "scrapedAt"
 > & {
   coverPhoto: string | null;
 };
@@ -30,7 +51,7 @@ export type CarsResult = {
   totalPages: number;
 };
 
-function mapCarListItem(car: Car & { photos: CarPhoto[] }): CarListItem {
+function mapCarListItem(car: CarRecord): CarListItem {
   return {
     id: car.id,
     sourceUrl: car.sourceUrl,
