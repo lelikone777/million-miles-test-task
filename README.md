@@ -9,8 +9,8 @@ Single-repo implementation of:
 - responsive web UI: cars list + details page
 
 ## Delivery Links
-- Source code: `<put-your-github-or-gitlab-link-here>`
-- Deployed app: `<put-your-public-app-link-here>`
+- Source code: `https://github.com/lelikone777/million-miles-test-task`
+- Deployed app: `https://million-miles-test-task.vercel.app`
 
 ## Stack
 - `Next.js` (App Router, route handlers)
