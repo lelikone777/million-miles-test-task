@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Car {
+  id                   String    @id @default(cuid())
+  source               String    @default("carsensor")
+  sourceId             String    @unique
+  sourceUrl            String    @unique
+  title                String
+  brand                String
+  model                String
+  year                 Int?
+  mileageKm            Int?
+  totalPriceYen        Int?
+  vehiclePriceYen      Int?
+  color                String?
+  fuelType             String?
+  transmission         String?
+  bodyType             String?
+  driveType            String?
+  steering             String?
+  engineDisplacementCc Int?
+  location             String?
+  inspectionExpiry     String?
+  repairHistory        String?
+  description          String?
+  rawSpecs             Json?
+  scrapedAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  photos               CarPhoto[]
+
+  @@index([brand])
+  @@index([model])
+  @@index([year])
+  @@index([totalPriceYen])
+  @@index([mileageKm])
+}
+
+model CarPhoto {
+  id        String   @id @default(cuid())
+  carId     String
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@unique([carId, url])
+}
+
+model ScrapeRun {
+  id          String    @id @default(cuid())
+  status      String
+  startedAt   DateTime  @default(now())
+  finishedAt  DateTime?
+  message     String?
+  pagesScanned Int      @default(0)
+  carsFound   Int       @default(0)
+  carsUpserted Int      @default(0)
+}
+
+model TranslationCache {
+  id             String   @id @default(cuid())
+  sourceHash     String
+  sourceText     String
+  targetLang     String
+  translatedText String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([sourceHash, targetLang])
+}

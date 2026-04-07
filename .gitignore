@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+package-lock.json
 /.pnp
 .pnp.*
 .yarn/*
@@ -22,7 +23,20 @@
 
 # misc
 .DS_Store
+.DS_Store?
+Thumbs.db
+Desktop.ini
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
 *.pem
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
 
 # debug
 npm-debug.log*
@@ -35,6 +49,21 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# local tooling / caches
+.turbo
+.eslintcache
+.stylelintcache
+
+# editors / IDEs
+.idea/
+.vscode/
+*.iml
+
+# optional local runtime artifacts
+dist/
+tmp/
+temp/
 
 # typescript
 *.tsbuildinfo

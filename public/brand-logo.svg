@@ -1,0 +1,10 @@
+<svg width="260" height="64" viewBox="0 0 260 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M15 38C19.4 28.5 28.5 22 39 22H64C74.5 22 83.6 28.5 88 38" stroke="#10223A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M32 26L41.5 16H62.5L72 26" stroke="#1E7BE7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="33" cy="40" r="5.5" fill="#10223A"/>
+  <circle cx="70" cy="40" r="5.5" fill="#10223A"/>
+  <path d="M99 42C109 34 119 34 129 42C139 50 149 50 159 42" stroke="#FF6A3D" stroke-width="3.5" stroke-linecap="round"/>
+  <text x="174" y="29" fill="#10223A" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800" letter-spacing="-0.4">Million</text>
+  <text x="174" y="48" fill="#10223A" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800" letter-spacing="-0.4">Miles</text>
+  <path d="M246 20H250" stroke="#FF6A3D" stroke-width="4" stroke-linecap="round"/>
+</svg>
