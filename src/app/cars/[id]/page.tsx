@@ -16,6 +16,11 @@ type SpecItem = {
   value: string;
 };
 
+type CarPhotoItem = {
+  id: string;
+  url: string;
+};
+
 const EMPTY_VALUE = "Н/Д";
 
 const SPEC_LABELS_RU: Record<string, string> = {
@@ -202,7 +207,7 @@ export default async function CarDetailsPage({ params }: PageProps) {
         <section className="glass-panel p-5 sm:p-6">
           <h2 className="mb-4 text-xl font-semibold">Фотографии ({car.photos.length})</h2>
           <CarPhotoGallery
-            photos={car.photos.map((photo) => ({ id: photo.id, url: photo.url }))}
+            photos={car.photos.map((photo: CarPhotoItem) => ({ id: photo.id, url: photo.url }))}
             alt={localizedTitle ?? cardTitle}
           />
         </section>
