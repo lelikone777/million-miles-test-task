@@ -51,6 +51,51 @@ export type CarsResult = {
   totalPages: number;
 };
 
+const RETRYABLE_DB_MESSAGE_PARTS = [
+  "connection terminated unexpectedly",
+  "can't reach database server",
+  "server has closed the connection",
+  "timed out fetching a new connection",
+  "connection reset",
+];
+
+function isRetryableDbError(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const maybeError = error as { message?: string; code?: string };
+  const message = maybeError.message?.toLowerCase() ?? "";
+
+  if (maybeError.code === "P1001") {
+    return true;
+  }
+
+  return RETRYABLE_DB_MESSAGE_PARTS.some((part) => message.includes(part));
+}
+
+async function withDbRetry<T>(fn: () => Promise<T>, retries = 2): Promise<T> {
+  let attempt = 0;
+  let lastError: unknown;
+
+  while (attempt <= retries) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableDbError(error) || attempt === retries) {
+        throw error;
+      }
+
+      const backoffMs = 250 * (attempt + 1);
+      await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      attempt += 1;
+    }
+  }
+
+  throw lastError;
+}
+
 function mapCarListItem(car: CarRecord): CarListItem {
   return {
     id: car.id,
@@ -76,21 +121,23 @@ export async function queryCars(query: CarsQuery): Promise<CarsResult> {
   const orderBy = buildCarsOrderBy(query);
   const skip = (query.page - 1) * query.limit;
 
-  const [total, cars] = await Promise.all([
-    prisma.car.count({ where }),
-    prisma.car.findMany({
-      where,
-      orderBy,
-      skip,
-      take: query.limit,
-      include: {
-        photos: {
-          orderBy: { sortOrder: "asc" },
-          take: 1,
+  const [total, cars] = await withDbRetry(async () =>
+    Promise.all([
+      prisma.car.count({ where }),
+      prisma.car.findMany({
+        where,
+        orderBy,
+        skip,
+        take: query.limit,
+        include: {
+          photos: {
+            orderBy: { sortOrder: "asc" },
+            take: 1,
+          },
         },
-      },
-    }),
-  ]);
+      }),
+    ])
+  );
 
   const totalPages = Math.max(1, Math.ceil(total / query.limit));
 
@@ -104,12 +151,14 @@ export async function queryCars(query: CarsQuery): Promise<CarsResult> {
 }
 
 export async function getCarById(id: string) {
-  return prisma.car.findUnique({
-    where: { id },
-    include: {
-      photos: {
-        orderBy: { sortOrder: "asc" },
+  return withDbRetry(() =>
+    prisma.car.findUnique({
+      where: { id },
+      include: {
+        photos: {
+          orderBy: { sortOrder: "asc" },
+        },
       },
-    },
-  });
+    })
+  );
 }
