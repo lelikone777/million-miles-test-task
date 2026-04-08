@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
@@ -10,6 +11,15 @@ import { formatDate, formatKm, formatYen } from "@/lib/format";
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export const metadata: Metadata = {
+  title: "Каталог автомобилей",
+  description:
+    "Список автомобилей с фильтрами, сортировкой и пагинацией. Каталог обновляется автоматически.",
+  alternates: {
+    canonical: "/cars",
+  },
 };
 
 const SORT_OPTIONS: Array<{ value: CarsQuery["sort"]; label: string }> = [

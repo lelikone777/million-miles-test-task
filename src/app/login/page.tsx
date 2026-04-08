@@ -1,7 +1,17 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/login-form";
 import { SiteLogo } from "@/components/site-logo";
 import { getAuthFromCookies } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Вход в каталог автомобилей",
+  description:
+    "Авторизация в каталоге автомобилей CarSensor. Вход по логину и паролю для просмотра ассортимента.",
+  alternates: {
+    canonical: "/login",
+  },
+};
 
 export default async function LoginPage() {
   const auth = await getAuthFromCookies();

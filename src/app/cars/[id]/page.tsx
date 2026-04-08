@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { CarPhotoGallery } from "@/components/car-photo-gallery";
 import { SiteLogo } from "@/components/site-logo";
 import { requireWebAuth } from "@/lib/auth";
@@ -20,6 +22,8 @@ type CarPhotoItem = {
   id: string;
   url: string;
 };
+
+const getCarByIdCached = cache(async (id: string) => getCarById(id));
 
 const EMPTY_VALUE = "Н/Д";
 
@@ -117,12 +121,60 @@ async function localizeSpecs(rawSpecs: unknown): Promise<SpecItem[]> {
   return localized.filter((item) => item.value.trim().length > 0);
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const car = await getCarByIdCached(id);
+
+  if (!car) {
+    return {
+      title: "Автомобиль не найден",
+      description: "Карточка автомобиля недоступна.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
+  const carTitle = [car.brand, car.model, car.year ? `(${car.year})` : ""]
+    .filter(Boolean)
+    .join(" ");
+  const priceText = car.totalPriceYen
+    ? `${car.totalPriceYen.toLocaleString("ru-RU")} JPY`
+    : "цена по запросу";
+  const description = `Характеристики ${carTitle}: пробег ${formatKm(
+    car.mileageKm
+  )}, цена ${priceText}.`;
+  const coverImage = car.photos[0]?.url;
+
+  return {
+    title: carTitle,
+    description,
+    alternates: {
+      canonical: `/cars/${car.id}`,
+    },
+    openGraph: {
+      type: "article",
+      url: `/cars/${car.id}`,
+      title: carTitle,
+      description,
+      images: coverImage ? [{ url: coverImage, alt: carTitle }] : undefined,
+    },
+    twitter: {
+      card: coverImage ? "summary_large_image" : "summary",
+      title: carTitle,
+      description,
+      images: coverImage ? [coverImage] : undefined,
+    },
+  };
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function CarDetailsPage({ params }: PageProps) {
   await requireWebAuth();
   const { id } = await params;
-  const car = await getCarById(id);
+  const car = await getCarByIdCached(id);
 
   if (!car) {
     notFound();
